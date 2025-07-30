@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sample Modal Window</title>
+</head>
+<style>
+    .overlay {
+      position: fixed;
+      inset: 0;
+      background-color: rgba(0, 0, 0, 0.4);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
+      z-index: 1;
+    }
+
+    .overlay.visible {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    #open-modal {
+        padding: 10px;
+        background-color: orange;
+        color: black;
+        font-family: Arial, Helvetica, sans-serif;
+        border-radius: 5px;
+    }
+
+    #modal {
+        font-family:Arial, Helvetica, sans-serif;
+        padding: 20px;
+        border-radius: 10px;
+        z-index: 2;
+    }
+
+    .modal-container {
+        display: flex;
+        align-items: center;
+        align-content: column;
+        flex-direction: column;
+    }
+
+    #close-modal {
+        padding: 10px;
+        background-color: orange;
+        color: black;
+        border-radius: 5px;
+    }
+
+    @keyframes appear {
+        0% {opacity: 0; transform: scale(1.5)}
+        100% {opacity: 1; transform: scale(1)}
+    }
+
+    @keyframes disappear {
+        0% {opacity: 1; transform: scale(1)}
+        100% {opacity: 0; transform: scale(1.5)}
+    }
+
+    .animate-appear {
+        animation: appear 0.2s forwards;
+    }
+
+    .animate-disappear {
+        animation: disappear 0.2s forwards;
+    }
+</style>
+<body>
+    <button id="open-modal">Open Modal</button>
+    <div class="overlay"></div>
+    <dialog id="modal">
+        <div class="modal-container">
+            <h1>Text here</h1>
+        <button id="close-modal">Close modal</button>
+        </div>
+    </dialog>
+</body>
+<script>
+    const openModalButton = document.getElementById('open-modal');
+    const closeModalButton = document.getElementById('close-modal');
+    const modalWindow = document.getElementById('modal');
+    const overlay = document.querySelector('.overlay');
+
+    openModalButton.addEventListener('click', () => {
+        overlay.classList.add('visible');
+        modalWindow.showModal();
+        modalWindow.classList.remove('animate-disappear');
+        modalWindow.classList.add('animate-appear');
+        
+    });
+
+    closeModalButton.addEventListener('click', () => {
+        modalWindow.classList.remove('animate-appear');
+        modalWindow.classList.add('animate-disappear');
+        overlay.classList.remove('visible');
+    });
+
+    overlay.addEventListener('click', () => {
+        modalWindow.classList.remove('animate-appear');
+        modalWindow.classList.add('animate-disappear');
+        overlay.classList.remove('visible');
+    });
+
+    modalWindow.addEventListener('animationend', () => {
+        if (modalWindow.classList.contains('animate-disappear')) {
+            modalWindow.close();
+        }
+    });
+
+    // Click outside modal content
+    modalWindow.addEventListener('click', (event) => {
+        if (event.target === modalWindow) {  
+            modalWindow.classList.remove('animate-appear');
+            modalWindow.classList.add('animate-disappear');
+            overlay.classList.remove('visible');
+        }
+    });
+
+    modalWindow.addEventListener('cancel', e => {
+        e.preventDefault();
+        modalWindow.classList.remove('animate-appear');
+        modalWindow.classList.add('animate-disappear');
+        overlay.classList.remove('visible');
+    });
+
+    modalWindow.addEventListener('close', () => {
+        overlay.classList.remove('visible');
+        console.log('modal window has been closed');
+    });
+</script>
+</html>
